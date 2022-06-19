@@ -15,17 +15,18 @@ library(leafgl)
 library(tigris)
  library(deckgl)
 library(rdeck)
+library(sfheaders)
 
- setwd("D:\\PASSION_PROJECTS\\cta")
-#setwd("/Users/parag.geminigmail.com/Documents/CTA")
+ #setwd("D:\\PASSION_PROJECTS\\cta")
+setwd("/Users/parag.geminigmail.com/Documents/CTA")
 
 ### main statsistics file #############
 #tripsByRoute,
 #tripsByUniqueStopsRoutes ,
 #tripsByTotalStopsRoutes
-View(tripsByRoute)
-View(tripsByUniqueStopsRoutes) 
-View(tripsByTotalStopsRoutes)
+# View(tripsByRoute)
+# View(tripsByUniqueStopsRoutes) 
+# View(tripsByTotalStopsRoutes)
 
 
 
@@ -103,8 +104,9 @@ tripsByRoute <-  tripRoute[ , .(trips = .N),
 
 tripsByRouteCal <- setDT(left_join(tripsByRoute, calendar, by = "service_id"))
 
-tripsByRouteCal_f <- tripsByRouteCal[ , c(2,1,4,5,3,7,15,16,8:14)][ ,`:=`(
-  start_date = ymd(start_date), end_date = ymd(end_date)) , ]
+tripsByRouteCal_f <- tripsByRouteCal[ , c(2,1,4,5,3,7,15,16,8:14)]
+#[ ,`:=`(
+ # start_date = ymd(start_date), end_date = ymd(end_date)) , ]
 
 
 tripsByMonth <- tripsByRouteCal_f[ , .(trips = .N), by = list(start_date, end_date) ]
@@ -124,7 +126,6 @@ tripsByRouteCal_f <- tripsByRouteCal_f[ , c(1:8,16,9:15)]
 
 
 
-tripsByRouteCal_f <- split(tripsByRouteCal_f, tripsByRouteCal_f$start_date)
 
 ##### scraping all the stops list from the cta website
 
@@ -179,9 +180,8 @@ deckgl() %>%
 
 
 
-##################### getting trips and their shapes ###############
 
-trips_shapes <- left_join(trips, shapes, by = "shape_id")
+
 
 
 
