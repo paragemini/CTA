@@ -12,8 +12,8 @@ library(rvest)
 library(lubridate)
 library(purrr)
 
-setwd("D:\\PASSION_PROJECTS\\cta")
-
+# setwd("D:\\PASSION_PROJECTS\\cta")
+setwd("/Users/parag.geminigmail.com/Documents/CTA")
 
 ### main statsistics file #############
 #tripsByRoute,
@@ -70,7 +70,7 @@ return(flat_stops)
 
 
 ###### reading files #########
-transfers <- read.csv("transfers.csv")
+#transfers <- read.csv("transfers.csv")
 files_paths <- list.files("./google_transit", full.names = T)
 files_names <- list.files("./google_transit")
 files <- lapply(files_paths, fread)
@@ -128,7 +128,7 @@ left_join(tripsByStops, )
 
 
 
-
+dsgfsfhm
 
 ##### getting the schedule of the trips
 t <- unique(trips[routes[route_type == 1], on = .(route_id = route_id)], 
