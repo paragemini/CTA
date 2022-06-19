@@ -11,6 +11,9 @@ library(leaflet)
 library(rvest)
 library(lubridate)
 library(purrr)
+library(leafgl)
+library(tigris)
+library(deckgl)
 
 # setwd("D:\\PASSION_PROJECTS\\cta")
 setwd("/Users/parag.geminigmail.com/Documents/CTA")
@@ -19,7 +22,9 @@ setwd("/Users/parag.geminigmail.com/Documents/CTA")
 #tripsByRoute,
 #tripsByUniqueStopsRoutes ,
 #tripsByTotalStopsRoutes
-
+View(tripsByRoute)
+View(tripsByUniqueStopsRoutes) 
+View(tripsByTotalStopsRoutes)
 
 
 
@@ -93,7 +98,7 @@ shapes <- cta_data[["shapes"]]
 tripRoute <- left_join(trips, routes, by = "route_id")
 tripsByRoute <-  tripRoute[ , .(trips = .N), 
                 by = list(route_type, route_id, 
-            route_short_name, route_long_name, route_url) ]
+             route_long_name, service_id, direction, route_url) ]
 
 ##### scraping all the stops list from the cta website
 
@@ -124,11 +129,40 @@ tripsByUniqueStopsRoutes <- trip_stops[ , .( trips = .N, begin = min(arrival_val
 tripsByTotalStopsRoutes <- trip_stops[, .(total_stops = .N),by = list(route_id, trip_id,direction)][ ,
                                .(totalTrips = .N) , by = list( route_id,total_stops,direction )]
 
-left_join(tripsByStops, )
+stops_map <- left_join(tripsByUniqueStopsRoutes, stops[, c(1,3:6)], by = "stop_id")
+stops_map <- st_as_sf(stops_map, coords = c("stop_lon", "stop_lat"), crs = 4326)
+
+blocks_chi <- blocks(state = "17", county = "031")
+
+props = list(
+  getPolygon = JS("d => d.geometry.coordinates"),
+  pickable = TRUE,
+  stroked = TRUE,
+  filled = FALSE,
+  wireframe = TRUE,  
+  getLineWidth = 2,
+  getLineColor = "black",
+  lineWidthMinPixels = 1 # !!!
+)
+
+
+deckgl() %>%
+  add_basemap(use_carto_style("positron")) %>%
+  add_polygon_layer(data =blocks_chi, properties = props) %>%
+  add_scatterplot_layer()
+
+
+leaflet() %>%
+  addTiles() %>%
+   addGlPoints(data = stops_map) %>%
+  addPolygons(data = st_transform(blocks_chi,4326), weight = 1, fillOpacity = 0)
 
 
 
-dsgfsfhm
+
+
+
+
 
 ##### getting the schedule of the trips
 t <- unique(trips[routes[route_type == 1], on = .(route_id = route_id)], 
