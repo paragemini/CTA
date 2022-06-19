@@ -13,10 +13,11 @@ library(lubridate)
 library(purrr)
 library(leafgl)
 library(tigris)
-library(deckgl)
+ library(deckgl)
+library(rdeck)
 
-# setwd("D:\\PASSION_PROJECTS\\cta")
-setwd("/Users/parag.geminigmail.com/Documents/CTA")
+ setwd("D:\\PASSION_PROJECTS\\cta")
+#setwd("/Users/parag.geminigmail.com/Documents/CTA")
 
 ### main statsistics file #############
 #tripsByRoute,
@@ -100,6 +101,31 @@ tripsByRoute <-  tripRoute[ , .(trips = .N),
                 by = list(route_type, route_id, 
              route_long_name, service_id, direction, route_url) ]
 
+tripsByRouteCal <- setDT(left_join(tripsByRoute, calendar, by = "service_id"))
+
+tripsByRouteCal_f <- tripsByRouteCal[ , c(2,1,4,5,3,7,15,16,8:14)][ ,`:=`(
+  start_date = ymd(start_date), end_date = ymd(end_date)) , ]
+
+
+tripsByMonth <- tripsByRouteCal_f[ , .(trips = .N), by = list(start_date, end_date) ]
+
+
+
+for( i in 1:nrow(tripsByRouteCal_f)){
+  print(i)
+ days <-  setDT(list(colnames(tripsByRouteCal_f[,9:15])[which(tripsByRouteCal_f[i,9:15] == 1)]))
+ nickDays <- data.frame(V1 = colnames(tripsByRouteCal_f[1,9:15]),
+            V2 = c("M","T","W","R","F","SA","SU"))
+ days <- left_join(days,nickDays, by = "V1" )
+ tripsByRouteCal_f$Days[i] <- paste0(days$V2, collapse = ",")
+}
+
+tripsByRouteCal_f <- tripsByRouteCal_f[ , c(1:8,16,9:15)]
+
+
+
+tripsByRouteCal_f <- split(tripsByRouteCal_f, tripsByRouteCal_f$start_date)
+
 ##### scraping all the stops list from the cta website
 
 stops_list_scrape <- scrape_stops()
@@ -152,10 +178,10 @@ deckgl() %>%
   add_scatterplot_layer()
 
 
-leaflet() %>%
-  addTiles() %>%
-   addGlPoints(data = stops_map) %>%
-  addPolygons(data = st_transform(blocks_chi,4326), weight = 1, fillOpacity = 0)
+
+##################### getting trips and their shapes ###############
+
+trips_shapes <- left_join(trips, shapes, by = "shape_id")
 
 
 
@@ -164,96 +190,96 @@ leaflet() %>%
 
 
 
-##### getting the schedule of the trips
-t <- unique(trips[routes[route_type == 1], on = .(route_id = route_id)], 
-            by = c("route_id","service_id"))
-
-t[ ,.(trips = .N) , by = list(route_id, route_type)]
-
-
-
-# unique service ids for subways
-
- service_subway <- unique(unique(trips[routes[route_type == 1], on = .(route_id = route_id)], 
-             by = c("route_id","service_id"))[, .(service_id)])
-
-
-routes_service <- calendar[service_subway, on = .(service_id = service_id)]
-
-routes_service[, Days := paste0(monday,tuesday,wednesday,
-                   thursday,friday,saturday,
-                   sunday),]
-
-tr_sub <- trips[routes[route_type == 1], on = .(route_id = route_id)][ , .(route_id, service_id,trip_id)]
-stop_times_f <- stop_times[,.(trip_id,arrival_time,departure_time,stop_id,stop_sequence)]
-final_table <- stop_times_f[tr_sub, on = .(trip_id = trip_id)]
-
-stats <- final_table[ , .(stops_n = .N ), by = .(route_id, service_id, trip_id)]
-x <- stats[, .SD[which.max(stops_n)], by= . (route_id, service_id)]
- #final stops table 
-y <- stats[, .SD[which.max(stops_n)], by= . (route_id)]
-
-
-
-
-### shapes lookup table
-
-shapes_lookup <- shapes[ , .(total_points = .N), by = shape_id ]
-tbrss <- trips[,  .(trips_n = .N), by = .(route_id,service_id,shape_id, direction)]
-by_route_parent <- split(tbrss, factor(tbrss$route_id))
-
-for( i in 1:length(by_route_parent)) {
-   print(i)
-  x <- left_join(by_route_parent[[i]], shapes_lookup, by = "shape_id")
- # y <- x[ , .SD[ which.max(total_points) ], by = direction]
-  y <- x[which.max(total_points)]
-#print(x)
-  z <- left_join(y, shapes, by = "shape_id")
-  #route_by_dir <-  split(z, factor(z$direction))
-  # route_by_dir_sf <- lapply(route_by_dir, function(x){
-  #   st_linestring(as.matrix(x[, c("shape_pt_lon", "shape_pt_lat")]))
-  # })
-  route_by_dir_sf <- st_linestring(as.matrix(z[, c("shape_pt_lon", "shape_pt_lat")]))
-by_route_parent[[i]] <- route_by_dir_sf
-}
-
-#y <- unlist(by_route_parent,recursive = F)
-#names(y) <- NULL
-route_names <- names(by_route_parent)
-names(by_route_parent) <- NULL
-(route_sfc <- st_sfc(by_route_parent)) #paranthese are important to convert the list object into sfc 
-st_crs(route_sfc) <- '+proj=longlat +datum=WGS84'
-  
-route_sf<- st_sf(route_id = route_names, route_sfc)
-routes_sf <- left_join(route_sf, routes, by = "route_id")
-routes_sf$color_r <- paste0("#", routes_sf$route_color)
-subway <- routes_sf[routes_sf$route_type == 1,]
-
- map_sub <- leaflet() %>% addProviderTiles(providers[[113]]) 
-
-for( i in 1:nrow(subway)){
-  map_sub <- addPolylines(map = map_sub, data= subway[i,],
-                        label = subway$route_long_name[i],
-                        group = subway$route_long_name[i], 
-                        color = subway$color_r[i],
-                        weight = 3,
-                        opacity = 1, 
-                        highlightOptions = highlightOptions(bringToFront = TRUE, weight = 7 )
-                       # highlightOptions = highlightOptions(dashArray = "3",bringToFront = T)
-                        )
-}
-final_map <-  map_sub %>% addLayersControl(overlayGroups = subway$route_long_name,
-                              options = layersControlOptions(collapsed = FALSE))
- 
-
-  
-  
-
-
-
-
-
-## Fitlreing the files
-trips_f <- trips[, .(shape_id,service_id,route_id,trip_id,direction), ]
-shapes_f <- shapes[ , .(shape_id,shape_pt_lat ,shape_pt_lon,shape_pt_sequence)]
-routes[ , .(route_id, route_short_name, route_long_name, route_type , route_color),]
+# ##### getting the schedule of the trips
+# t <- unique(trips[routes[route_type == 1], on = .(route_id = route_id)], 
+#             by = c("route_id","service_id"))
+# 
+# t[ ,.(trips = .N) , by = list(route_id, route_type)]
+# 
+# 
+# 
+# # unique service ids for subways
+# 
+#  service_subway <- unique(unique(trips[routes[route_type == 1], on = .(route_id = route_id)], 
+#              by = c("route_id","service_id"))[, .(service_id)])
+# 
+# 
+# routes_service <- calendar[service_subway, on = .(service_id = service_id)]
+# 
+# routes_service[, Days := paste0(monday,tuesday,wednesday,
+#                    thursday,friday,saturday,
+#                    sunday),]
+# 
+# tr_sub <- trips[routes[route_type == 1], on = .(route_id = route_id)][ , .(route_id, service_id,trip_id)]
+# stop_times_f <- stop_times[,.(trip_id,arrival_time,departure_time,stop_id,stop_sequence)]
+# final_table <- stop_times_f[tr_sub, on = .(trip_id = trip_id)]
+# 
+# stats <- final_table[ , .(stops_n = .N ), by = .(route_id, service_id, trip_id)]
+# x <- stats[, .SD[which.max(stops_n)], by= . (route_id, service_id)]
+#  #final stops table 
+# y <- stats[, .SD[which.max(stops_n)], by= . (route_id)]
+# 
+# 
+# 
+# 
+# ### shapes lookup table
+# 
+# shapes_lookup <- shapes[ , .(total_points = .N), by = shape_id ]
+# tbrss <- trips[,  .(trips_n = .N), by = .(route_id,service_id,shape_id, direction)]
+# by_route_parent <- split(tbrss, factor(tbrss$route_id))
+# 
+# for( i in 1:length(by_route_parent)) {
+#    print(i)
+#   x <- left_join(by_route_parent[[i]], shapes_lookup, by = "shape_id")
+#  # y <- x[ , .SD[ which.max(total_points) ], by = direction]
+#   y <- x[which.max(total_points)]
+# #print(x)
+#   z <- left_join(y, shapes, by = "shape_id")
+#   #route_by_dir <-  split(z, factor(z$direction))
+#   # route_by_dir_sf <- lapply(route_by_dir, function(x){
+#   #   st_linestring(as.matrix(x[, c("shape_pt_lon", "shape_pt_lat")]))
+#   # })
+#   route_by_dir_sf <- st_linestring(as.matrix(z[, c("shape_pt_lon", "shape_pt_lat")]))
+# by_route_parent[[i]] <- route_by_dir_sf
+# }
+# 
+# #y <- unlist(by_route_parent,recursive = F)
+# #names(y) <- NULL
+# route_names <- names(by_route_parent)
+# names(by_route_parent) <- NULL
+# (route_sfc <- st_sfc(by_route_parent)) #paranthese are important to convert the list object into sfc 
+# st_crs(route_sfc) <- '+proj=longlat +datum=WGS84'
+#   
+# route_sf<- st_sf(route_id = route_names, route_sfc)
+# routes_sf <- left_join(route_sf, routes, by = "route_id")
+# routes_sf$color_r <- paste0("#", routes_sf$route_color)
+# subway <- routes_sf[routes_sf$route_type == 1,]
+# 
+#  map_sub <- leaflet() %>% addProviderTiles(providers[[113]]) 
+# 
+# for( i in 1:nrow(subway)){
+#   map_sub <- addPolylines(map = map_sub, data= subway[i,],
+#                         label = subway$route_long_name[i],
+#                         group = subway$route_long_name[i], 
+#                         color = subway$color_r[i],
+#                         weight = 3,
+#                         opacity = 1, 
+#                         highlightOptions = highlightOptions(bringToFront = TRUE, weight = 7 )
+#                        # highlightOptions = highlightOptions(dashArray = "3",bringToFront = T)
+#                         )
+# }
+# final_map <-  map_sub %>% addLayersControl(overlayGroups = subway$route_long_name,
+#                               options = layersControlOptions(collapsed = FALSE))
+#  
+# 
+#   
+#   
+# 
+# 
+# 
+# 
+# 
+# ## Fitlreing the files
+# trips_f <- trips[, .(shape_id,service_id,route_id,trip_id,direction), ]
+# shapes_f <- shapes[ , .(shape_id,shape_pt_lat ,shape_pt_lon,shape_pt_sequence)]
+# routes[ , .(route_id, route_short_name, route_long_name, route_type , route_color),]
