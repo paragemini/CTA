@@ -13,15 +13,15 @@ library(lubridate)
 library(purrr)
 library(leafgl)
 library(tigris)
-library(deckgl)
+#library(deckgl)
 library(rdeck)
 library(sfheaders)
 
 
 #unique shapes 1658
 
-#setwd("D:\\PASSION_PROJECTS\\cta")
-setwd("/Users/parag.geminigmail.com/Documents/CTA")
+setwd("D:\\PASSION_PROJECTS\\cta")
+#setwd("/Users/parag.geminigmail.com/Documents/CTA")
 
 ### main statsistics file #############
 #tripsByRoute,
@@ -179,13 +179,76 @@ master_file <- setDT(left_join(totalTripsByTotStops[ ,-c(4,8:10)],
                          st_drop_geometry(stop_trip_shapes[, c(1,2)]), 
                          by = "trip_id"))
  
+ #without stops as by : 1658 , with stops as by 1761
 master_file <- master_file[ ,.(totalTrips = sum(totalTrips), trip_id = trip_id[.N]) ,
-                        by = list( route_id,total_stops,direction,shape_id,
-                                   total_stops)]
- 
+                        by = list( route_id,total_stops,direction,shape_id,stops)]
+
+
+
+
+routesByMaxStops <- left_join(left_join(master_file[ , .SD[which.max(total_stops)] ,
+             by = list(route_id, direction)], routes[,c(1,3,4)], by = "route_id"),
+             trip_shapes, by = "shape_id")
+routesByMaxStops <- st_as_sf(routesByMaxStops, sf_column_name = "geometry", crs = 4326)
+
+
+
+ stops_sf <- st_as_sf(stops, coords = c("stop_lon","stop_lat"), crs = 4326)
+
+#duplicate stops
+# 41.97767
+# -87.90422, 41.97767
+# -87.90422
+
 leaflet() %>%
   addTiles() %>%
-  addPolygons(data = stop_trip_shapes, weight = 1)
+  addGlPolylines(data = routesByMaxStops, 
+              weight = 1, popup = paste0("Name : " , routesByMaxStops$route_long_name, 
+              "</br> Total Stops : ", routesByMaxStops$total_stops,
+              "</br> Direction : ", routesByMaxStops$direction,
+              "</br> Total Trips : ", routesByMaxStops$totalTrips,
+              "</br> Total Length : ", round(routesByMaxStops$length_mi,1), " miles",
+              "</br> Shape ID : ", routesByMaxStops$shape_id)) %>%
+  # addGlPoints(data = stops_sf,
+  #             popup = paste0(stops_sf$stop_name, " ", stops_sf$stop_id),
+  #             fillColor = "black" ) %>%
+  addCircleMarkers(data = ,
+                   lat = stops[stops$stop_id == "30076",]$stop_lat,
+                   lng = stops[stops$stop_id == "30076",]$stop_lon,
+                    weight = 4, color = "red")
+
+
+# leaflet() %>%
+#   addTiles() %>%
+#   addPolylines(data = routesByMaxStops[ routesByMaxStops$shape_id == "306800001"  , ], 
+#                  weight = 3,
+#                popup = paste0("Name : " , routesByMaxStops$route_long_name[ routesByMaxStops$shape_id == "306800001"   ], 
+#                        "</br> Total Stops : ", routesByMaxStops$total_stops[ routesByMaxStops$shape_id == "306800001"   ],
+#                        "</br> Direction : ", routesByMaxStops$direction[ routesByMaxStops$shape_id == "306800001"   ],
+#                         "</br> Total Trips : ", routesByMaxStops$totalTrips[ routesByMaxStops$shape_id == "306800001"  ],
+#                        "</br> Total Length : ", round(routesByMaxStops$length_mi[ routesByMaxStops$shape_id == "306800001"   ],1), " miles",
+#                         "</br> Shape ID : ", routesByMaxStops$shape_id[ routesByMaxStops$shape_id == "306800001"   ]),group = "1") %>%
+#   addPolylines(data = routesByMaxStops[ routesByMaxStops$shape_id == "306800002"  , ], 
+#               weight = 3, 
+#               popup = paste0("Name : " , routesByMaxStops$route_long_name[ routesByMaxStops$shape_id == "306800002"   ], 
+#                              "</br> Total Stops : ", routesByMaxStops$total_stops[ routesByMaxStops$shape_id == "306800002"   ],
+#                              "</br> Direction : ", routesByMaxStops$direction[ routesByMaxStops$shape_id == "306800002"   ],
+#                              "</br> Total Trips : ", routesByMaxStops$totalTrips[ routesByMaxStops$shape_id == "306800002"   ],
+#                              "</br> Total Length : ", round(routesByMaxStops$length_mi[ routesByMaxStops$shape_id == "306800002"   ],1), " miles",
+#                              "</br> Shape ID : ", routesByMaxStops$shape_id[ routesByMaxStops$shape_id == "306800002"   ]), group = "2") %>%
+#   addLayersControl(overlayGroups = c("1","2"))
+ 
+one_sf <- routesByMaxStops[ routesByMaxStops$shape_id == "306800001"  , ] 
+plot(st_buffer(one_sf[,1], dist = 10), reset = FALSE)
+plot(one_sf,col='blue',add=TRUE)
+
+leaflet() %>%
+  addProviderTiles(providers[[110]]) %>%
+  addGlPolylines(data = stop_trip_shapes, 
+                 weight = 1, popup = stop_trip_shapes$trip_id) %>%
+  addGlPoints(data = stops_sf,
+              popup = paste0(stops_sf$stop_name, " ", stops_sf$stop_id),
+              fillColor = "black" )
 
 
 
