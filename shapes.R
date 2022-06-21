@@ -20,7 +20,7 @@ library(sfheaders)
 
 #unique shapes 1658
 
-setwd("D:\\PASSION_PROJECTS\\cta")
+#setwd("D:\\PASSION_PROJECTS\\cta")
 #setwd("/Users/parag.geminigmail.com/Documents/CTA")
 
 ### main statsistics file #############
@@ -81,8 +81,12 @@ scrape_stops <- function(){
 
 ###### reading files #########
 #transfers <- read.csv("transfers.csv")
-files_paths <- list.files("./google_transit", full.names = T)
-files_names <- list.files("./google_transit")
+files_paths <- list.files("C:\\Users\\pgupta\\CTA\\google_transit", full.names = T)
+files_names <- list.files("C:\\Users\\pgupta\\CTA\\google_transit")
+
+
+# files_paths <- list.files("./google_transit", full.names = T)
+# files_names <- list.files("./google_transit")
 files <- lapply(files_paths, fread)
 names(files) <- gsub(pattern = "\\.txt$", replacement = "", x = files_names)
 cta_data <- files

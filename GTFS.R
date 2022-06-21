@@ -13,12 +13,12 @@ library(lubridate)
 library(purrr)
 library(leafgl)
 library(tigris)
- library(deckgl)
-library(rdeck)
+library(deckgl)
+#library(rdeck)
 library(sfheaders)
 
  #setwd("D:\\PASSION_PROJECTS\\cta")
-setwd("/Users/parag.geminigmail.com/Documents/CTA")
+# setwd("/Users/parag.geminigmail.com/Documents/CTA")
 
 ### main statsistics file #############
 #tripsByRoute,
@@ -78,8 +78,8 @@ return(flat_stops)
 
 ###### reading files #########
 #transfers <- read.csv("transfers.csv")
-files_paths <- list.files("./google_transit", full.names = T)
-files_names <- list.files("./google_transit")
+files_paths <- list.files("C:\\Users\\pgupta\\CTA\\google_transit", full.names = T)
+files_names <- list.files("C:\\Users\\pgupta\\CTA\\google_transit")
 files <- lapply(files_paths, fread)
 names(files) <- gsub(pattern = "\\.txt$", replacement = "", x = files_names)
 cta_data <- files
@@ -102,14 +102,18 @@ tripsByRoute <-  tripRoute[ , .(trips = .N),
                 by = list(route_type, route_id, 
              route_long_name, service_id, direction, route_url) ]
 
-tripsByRouteCal <- setDT(left_join(tripsByRoute, calendar, by = "service_id"))
+tripsByRoute_noServiceID <- tripsByRoute[ , .(trips = sum(trips)), 
+                                          by = list(route_type, route_id, 
+                                                    route_long_name, direction, route_url) ] 
+
+tripsByRouteCal <- setDT(left_join(tripsByRoute, calendar, by = "service_id"))# calendar
 
 tripsByRouteCal_f <- tripsByRouteCal[ , c(2,1,4,5,3,7,15,16,8:14)]
 #[ ,`:=`(
  # start_date = ymd(start_date), end_date = ymd(end_date)) , ]
 
 
-tripsByMonth <- tripsByRouteCal_f[ , .(trips = .N), by = list(start_date, end_date) ]
+tripsByMonth <- tripsByRouteCal_f[ , .(trips = sum(trips)), by = list(start_date, end_date) ]
 
 
 

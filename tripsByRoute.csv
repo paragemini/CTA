@@ -1,0 +1,267 @@
+"","route_type","route_id","route_long_name","direction","route_url","trips"
+"1",3,"1","Bronzeville/Union Station","North","http://www.transitchicago.com/bus/1/",62
+"2",3,"1","Bronzeville/Union Station","South","http://www.transitchicago.com/bus/1/",56
+"3",3,"10","Museum of S & I","North","http://www.transitchicago.com/bus/10/",53
+"4",3,"10","Museum of S & I","South","http://www.transitchicago.com/bus/10/",42
+"5",3,"100","Jeffery Manor Express","East","http://www.transitchicago.com/bus/100/",52
+"6",3,"100","Jeffery Manor Express","West","http://www.transitchicago.com/bus/100/",53
+"7",3,"103","West 103rd","West","http://www.transitchicago.com/bus/103/",340
+"8",3,"103","West 103rd","East","http://www.transitchicago.com/bus/103/",346
+"9",3,"106","East 103rd","East","http://www.transitchicago.com/bus/106/",290
+"10",3,"106","East 103rd","West","http://www.transitchicago.com/bus/106/",297
+"11",3,"108","Halsted/95th","South","http://www.transitchicago.com/bus/108/",70
+"12",3,"108","Halsted/95th","North","http://www.transitchicago.com/bus/108/",74
+"13",3,"11","Lincoln","South","http://www.transitchicago.com/bus/11/",202
+"14",3,"11","Lincoln","North","http://www.transitchicago.com/bus/11/",202
+"15",3,"111","111th/King Drive","North","http://www.transitchicago.com/bus/111/",364
+"16",3,"111","111th/King Drive","South","http://www.transitchicago.com/bus/111/",366
+"17",3,"111A","Pullman Shuttle","North","http://www.transitchicago.com/bus/111A/",246
+"18",3,"111A","Pullman Shuttle","South","http://www.transitchicago.com/bus/111A/",246
+"19",3,"112","Vincennes/111th","West","http://www.transitchicago.com/bus/112/",298
+"20",3,"112","Vincennes/111th","East","http://www.transitchicago.com/bus/112/",299
+"21",3,"115","Pullman/115th","North","http://www.transitchicago.com/bus/115/",382
+"22",3,"115","Pullman/115th","South","http://www.transitchicago.com/bus/115/",380
+"23",3,"119","Michigan/119th","South","http://www.transitchicago.com/bus/119/",438
+"24",3,"119","Michigan/119th","North","http://www.transitchicago.com/bus/119/",448
+"25",3,"12","Roosevelt","East","http://www.transitchicago.com/bus/12/",576
+"26",3,"12","Roosevelt","West","http://www.transitchicago.com/bus/12/",581
+"27",3,"120","Ogilvie/Wacker Express","North","http://www.transitchicago.com/bus/120/",43
+"28",3,"120","Ogilvie/Wacker Express","South","http://www.transitchicago.com/bus/120/",41
+"29",3,"121","Union/Wacker Express","North","http://www.transitchicago.com/bus/121/",40
+"30",3,"121","Union/Wacker Express","South","http://www.transitchicago.com/bus/121/",49
+"31",3,"124","Navy Pier","East","http://www.transitchicago.com/bus/124/",265
+"32",3,"124","Navy Pier","West","http://www.transitchicago.com/bus/124/",269
+"33",3,"125","Water Tower Express","North","http://www.transitchicago.com/bus/125/",53
+"34",3,"125","Water Tower Express","South","http://www.transitchicago.com/bus/125/",54
+"35",3,"126","Jackson","West","http://www.transitchicago.com/bus/126/",373
+"36",3,"126","Jackson","East","http://www.transitchicago.com/bus/126/",378
+"37",3,"130","Museum Campus","East","http://www.transitchicago.com/bus/130/",95
+"38",3,"130","Museum Campus","West","http://www.transitchicago.com/bus/130/",100
+"39",3,"134","Stockton/LaSalle Express","South","http://www.transitchicago.com/bus/134/",48
+"40",3,"134","Stockton/LaSalle Express","North","http://www.transitchicago.com/bus/134/",34
+"41",3,"135","Clarendon/LaSalle Express","North","http://www.transitchicago.com/bus/135/",46
+"42",3,"135","Clarendon/LaSalle Express","South","http://www.transitchicago.com/bus/135/",54
+"43",3,"136","Sheridan/LaSalle Express","South","http://www.transitchicago.com/bus/136/",42
+"44",3,"136","Sheridan/LaSalle Express","North","http://www.transitchicago.com/bus/136/",32
+"45",3,"143","Stockton/Michigan Express","North","http://www.transitchicago.com/bus/143/",30
+"46",3,"143","Stockton/Michigan Express","South","http://www.transitchicago.com/bus/143/",36
+"47",3,"146","Inner Lake Shore/Michigan Express","South","http://www.transitchicago.com/bus/146/",584
+"48",3,"146","Inner Lake Shore/Michigan Express","North","http://www.transitchicago.com/bus/146/",582
+"49",3,"147","Outer DuSable Lake Shore Express","North","http://www.transitchicago.com/bus/147/",584
+"50",3,"147","Outer DuSable Lake Shore Express","South","http://www.transitchicago.com/bus/147/",570
+"51",3,"148","Clarendon Michigan Express","North","http://www.transitchicago.com/bus/148/",40
+"52",3,"148","Clarendon Michigan Express","South","http://www.transitchicago.com/bus/148/",52
+"53",3,"15","Jeffery Local","South","http://www.transitchicago.com/bus/15/",406
+"54",3,"15","Jeffery Local","North","http://www.transitchicago.com/bus/15/",408
+"55",3,"151","Sheridan","North","http://www.transitchicago.com/bus/151/",682
+"56",3,"151","Sheridan","South","http://www.transitchicago.com/bus/151/",688
+"57",3,"152","Addison","West","http://www.transitchicago.com/bus/152/",391
+"58",3,"152","Addison","East","http://www.transitchicago.com/bus/152/",404
+"59",3,"155","Devon","East","http://www.transitchicago.com/bus/155/",536
+"60",3,"155","Devon","West","http://www.transitchicago.com/bus/155/",530
+"61",3,"156","LaSalle","North","http://www.transitchicago.com/bus/156/",112
+"62",3,"156","LaSalle","South","http://www.transitchicago.com/bus/156/",116
+"63",3,"157","Streeterville/Taylor","West","http://www.transitchicago.com/bus/157/",117
+"64",3,"157","Streeterville/Taylor","East","http://www.transitchicago.com/bus/157/",111
+"65",3,"165","West 65th","East","http://www.transitchicago.com/bus/165/",18
+"66",3,"165","West 65th","West","http://www.transitchicago.com/bus/165/",20
+"67",3,"169","69th-UPS Express","West","http://www.transitchicago.com/bus/169/",12
+"68",3,"169","69th-UPS Express","East","http://www.transitchicago.com/bus/169/",10
+"69",3,"171","U. of Chicago/Hyde Park","South","http://www.transitchicago.com/bus/171/",73
+"70",3,"171","U. of Chicago/Hyde Park","North","http://www.transitchicago.com/bus/171/",75
+"71",3,"172","U. of Chicago/Kenwood","North","http://www.transitchicago.com/bus/172/",118
+"72",3,"172","U. of Chicago/Kenwood","South","http://www.transitchicago.com/bus/172/",122
+"73",3,"18","16th-18th","West","http://www.transitchicago.com/bus/18/",278
+"74",3,"18","16th-18th","East","http://www.transitchicago.com/bus/18/",292
+"75",3,"19","United Center Express","West","http://www.transitchicago.com/bus/19/",2
+"76",3,"192","University of Chicago Hosp. Exp.","South","http://www.transitchicago.com/bus/192/",18
+"77",3,"192","University of Chicago Hosp. Exp.","North","http://www.transitchicago.com/bus/192/",20
+"78",3,"2","Hyde Park Express","North","http://www.transitchicago.com/bus/2/",59
+"79",3,"2","Hyde Park Express","South","http://www.transitchicago.com/bus/2/",64
+"80",3,"20","Madison","West","http://www.transitchicago.com/bus/20/",809
+"81",3,"20","Madison","East","http://www.transitchicago.com/bus/20/",794
+"82",3,"201","Central/Ridge","East","http://www.transitchicago.com/bus/201/",136
+"83",3,"201","Central/Ridge","West","http://www.transitchicago.com/bus/201/",143
+"84",3,"206","Evanston Circulator","West","http://www.transitchicago.com/bus/206/",28
+"85",3,"206","Evanston Circulator","East","http://www.transitchicago.com/bus/206/",26
+"86",3,"21","Cermak","East","http://www.transitchicago.com/bus/21/",432
+"87",3,"21","Cermak","West","http://www.transitchicago.com/bus/21/",432
+"88",3,"22","Clark","South","http://www.transitchicago.com/bus/22/",672
+"89",3,"22","Clark","North","http://www.transitchicago.com/bus/22/",668
+"90",3,"24","Wentworth","North","http://www.transitchicago.com/bus/24/",101
+"91",3,"24","Wentworth","South","http://www.transitchicago.com/bus/24/",101
+"92",3,"26","South Shore Express","South","http://www.transitchicago.com/bus/26/",78
+"93",3,"26","South Shore Express","North","http://www.transitchicago.com/bus/26/",94
+"94",3,"28","Stony Island","North","http://www.transitchicago.com/bus/28/",412
+"95",3,"28","Stony Island","South","http://www.transitchicago.com/bus/28/",411
+"96",3,"29","State","North","http://www.transitchicago.com/bus/29/",458
+"97",3,"29","State","South","http://www.transitchicago.com/bus/29/",470
+"98",3,"3","King Drive","South","http://www.transitchicago.com/bus/3/",598
+"99",3,"3","King Drive","North","http://www.transitchicago.com/bus/3/",572
+"100",3,"30","South Chicago","South","http://www.transitchicago.com/bus/30/",315
+"101",3,"30","South Chicago","North","http://www.transitchicago.com/bus/30/",288
+"102",3,"31","31st","West","http://www.transitchicago.com/bus/31/",56
+"103",3,"31","31st","East","http://www.transitchicago.com/bus/31/",54
+"104",3,"34","South Michigan","South","http://www.transitchicago.com/bus/34/",499
+"105",3,"34","South Michigan","North","http://www.transitchicago.com/bus/34/",502
+"106",3,"35","35th","East","http://www.transitchicago.com/bus/35/",393
+"107",3,"35","35th","West","http://www.transitchicago.com/bus/35/",396
+"108",3,"36","Broadway","South","http://www.transitchicago.com/bus/36/",520
+"109",3,"36","Broadway","North","http://www.transitchicago.com/bus/36/",530
+"110",3,"37","Sedgwick","North","http://www.transitchicago.com/bus/37/",75
+"111",3,"37","Sedgwick","South","http://www.transitchicago.com/bus/37/",75
+"112",3,"39","Pershing","East","http://www.transitchicago.com/bus/39/",178
+"113",3,"39","Pershing","West","http://www.transitchicago.com/bus/39/",178
+"114",3,"4","Cottage Grove","North","http://www.transitchicago.com/bus/4/",694
+"115",3,"4","Cottage Grove","South","http://www.transitchicago.com/bus/4/",688
+"116",3,"43","43rd","East","http://www.transitchicago.com/bus/43/",230
+"117",3,"43","43rd","West","http://www.transitchicago.com/bus/43/",230
+"118",3,"44","Wallace-Racine","South","http://www.transitchicago.com/bus/44/",285
+"119",3,"44","Wallace-Racine","North","http://www.transitchicago.com/bus/44/",286
+"120",3,"47","47th","West","http://www.transitchicago.com/bus/47/",506
+"121",3,"47","47th","East","http://www.transitchicago.com/bus/47/",512
+"122",3,"48","South Damen","South","http://www.transitchicago.com/bus/48/",68
+"123",3,"48","South Damen","North","http://www.transitchicago.com/bus/48/",70
+"124",3,"49","Western","North","http://www.transitchicago.com/bus/49/",692
+"125",3,"49","Western","South","http://www.transitchicago.com/bus/49/",680
+"126",3,"49B","North Western","South","http://www.transitchicago.com/bus/49B/",560
+"127",3,"49B","North Western","North","http://www.transitchicago.com/bus/49B/",558
+"128",3,"5","South Shore Night Bus","East","http://www.transitchicago.com/bus/5/",52
+"129",3,"5","South Shore Night Bus","West","http://www.transitchicago.com/bus/5/",48
+"130",3,"50","Damen","North","http://www.transitchicago.com/bus/50/",388
+"131",3,"50","Damen","South","http://www.transitchicago.com/bus/50/",393
+"132",3,"51","51st","West","http://www.transitchicago.com/bus/51/",268
+"133",3,"51","51st","East","http://www.transitchicago.com/bus/51/",268
+"134",3,"52","Kedzie/California","South","http://www.transitchicago.com/bus/52/",468
+"135",3,"52","Kedzie/California","North","http://www.transitchicago.com/bus/52/",470
+"136",3,"52A","South Kedzie","South","http://www.transitchicago.com/bus/52A/",290
+"137",3,"52A","South Kedzie","North","http://www.transitchicago.com/bus/52A/",290
+"138",3,"53","Pulaski","North","http://www.transitchicago.com/bus/53/",738
+"139",3,"53","Pulaski","South","http://www.transitchicago.com/bus/53/",750
+"140",3,"53A","South Pulaski","North","http://www.transitchicago.com/bus/53A/",434
+"141",3,"53A","South Pulaski","South","http://www.transitchicago.com/bus/53A/",432
+"142",3,"54","Cicero","North","http://www.transitchicago.com/bus/54/",584
+"143",3,"54","Cicero","South","http://www.transitchicago.com/bus/54/",584
+"144",3,"54A","North Cicero/Skokie Blvd.","South","http://www.transitchicago.com/bus/54A/",40
+"145",3,"54A","North Cicero/Skokie Blvd.","North","http://www.transitchicago.com/bus/54A/",38
+"146",3,"54B","South Cicero","South","http://www.transitchicago.com/bus/54B/",306
+"147",3,"54B","South Cicero","North","http://www.transitchicago.com/bus/54B/",306
+"148",3,"55","Garfield","West","http://www.transitchicago.com/bus/55/",660
+"149",3,"55","Garfield","East","http://www.transitchicago.com/bus/55/",644
+"150",3,"55A","55th/Austin","West","http://www.transitchicago.com/bus/55A/",34
+"151",3,"55A","55th/Austin","East","http://www.transitchicago.com/bus/55A/",34
+"152",3,"55N","55th/Narragansett","West","http://www.transitchicago.com/bus/55N/",126
+"153",3,"55N","55th/Narragansett","East","http://www.transitchicago.com/bus/55N/",126
+"154",3,"56","Milwaukee","North","http://www.transitchicago.com/bus/56/",395
+"155",3,"56","Milwaukee","South","http://www.transitchicago.com/bus/56/",393
+"156",3,"57","Laramie","North","http://www.transitchicago.com/bus/57/",262
+"157",3,"57","Laramie","South","http://www.transitchicago.com/bus/57/",260
+"158",3,"59","59th/61st","East","http://www.transitchicago.com/bus/59/",198
+"159",3,"59","59th/61st","West","http://www.transitchicago.com/bus/59/",194
+"160",3,"6","Jackson Park Express","North","http://www.transitchicago.com/bus/6/",538
+"161",3,"6","Jackson Park Express","South","http://www.transitchicago.com/bus/6/",620
+"162",3,"60","Blue Island/26th","East","http://www.transitchicago.com/bus/60/",524
+"163",3,"60","Blue Island/26th","West","http://www.transitchicago.com/bus/60/",528
+"164",3,"62","Archer","North","http://www.transitchicago.com/bus/62/",520
+"165",3,"62","Archer","South","http://www.transitchicago.com/bus/62/",524
+"166",3,"62H","Archer/Harlem","East","http://www.transitchicago.com/bus/62H/",134
+"167",3,"62H","Archer/Harlem","West","http://www.transitchicago.com/bus/62H/",134
+"168",3,"63","63rd","East","http://www.transitchicago.com/bus/63/",745
+"169",3,"63","63rd","West","http://www.transitchicago.com/bus/63/",766
+"170",3,"63W","West 63rd","East","http://www.transitchicago.com/bus/63W/",261
+"171",3,"63W","West 63rd","West","http://www.transitchicago.com/bus/63W/",258
+"172",3,"65","Grand","East","http://www.transitchicago.com/bus/65/",418
+"173",3,"65","Grand","West","http://www.transitchicago.com/bus/65/",413
+"174",3,"66","Chicago","West","http://www.transitchicago.com/bus/66/",1036
+"175",3,"66","Chicago","East","http://www.transitchicago.com/bus/66/",1040
+"176",3,"67","67th-69th-71st","West","http://www.transitchicago.com/bus/67/",630
+"177",3,"67","67th-69th-71st","East","http://www.transitchicago.com/bus/67/",634
+"178",3,"68","Northwest Highway","East","http://www.transitchicago.com/bus/68/",219
+"179",3,"68","Northwest Highway","West","http://www.transitchicago.com/bus/68/",218
+"180",3,"7","Harrison","East","http://www.transitchicago.com/bus/7/",136
+"181",3,"7","Harrison","West","http://www.transitchicago.com/bus/7/",141
+"182",3,"70","Division","West","http://www.transitchicago.com/bus/70/",501
+"183",3,"70","Division","East","http://www.transitchicago.com/bus/70/",492
+"184",3,"71","71st South Shore","North","http://www.transitchicago.com/bus/71/",540
+"185",3,"71","71st South Shore","South","http://www.transitchicago.com/bus/71/",534
+"186",3,"72","North","West","http://www.transitchicago.com/bus/72/",717
+"187",3,"72","North","East","http://www.transitchicago.com/bus/72/",719
+"188",3,"73","Armitage","West","http://www.transitchicago.com/bus/73/",344
+"189",3,"73","Armitage","East","http://www.transitchicago.com/bus/73/",346
+"190",3,"74","Fullerton","East","http://www.transitchicago.com/bus/74/",570
+"191",3,"74","Fullerton","West","http://www.transitchicago.com/bus/74/",568
+"192",3,"75","74th-75th","West","http://www.transitchicago.com/bus/75/",420
+"193",3,"75","74th-75th","East","http://www.transitchicago.com/bus/75/",420
+"194",3,"76","Diversey","West","http://www.transitchicago.com/bus/76/",436
+"195",3,"76","Diversey","East","http://www.transitchicago.com/bus/76/",448
+"196",3,"77","Belmont","West","http://www.transitchicago.com/bus/77/",762
+"197",3,"77","Belmont","East","http://www.transitchicago.com/bus/77/",759
+"198",3,"78","Montrose","East","http://www.transitchicago.com/bus/78/",422
+"199",3,"78","Montrose","West","http://www.transitchicago.com/bus/78/",408
+"200",3,"79","79th","East","http://www.transitchicago.com/bus/79/",1259
+"201",3,"79","79th","West","http://www.transitchicago.com/bus/79/",1271
+"202",3,"8","Halsted","North","http://www.transitchicago.com/bus/8/",580
+"203",3,"8","Halsted","South","http://www.transitchicago.com/bus/8/",594
+"204",3,"80","Irving Park","East","http://www.transitchicago.com/bus/80/",540
+"205",3,"80","Irving Park","West","http://www.transitchicago.com/bus/80/",546
+"206",3,"81","Lawrence","West","http://www.transitchicago.com/bus/81/",652
+"207",3,"81","Lawrence","East","http://www.transitchicago.com/bus/81/",654
+"208",3,"81W","West Lawrence","East","http://www.transitchicago.com/bus/81W/",206
+"209",3,"81W","West Lawrence","West","http://www.transitchicago.com/bus/81W/",206
+"210",3,"82","Kimball-Homan","North","http://www.transitchicago.com/bus/82/",579
+"211",3,"82","Kimball-Homan","South","http://www.transitchicago.com/bus/82/",592
+"212",3,"84","Peterson","West","http://www.transitchicago.com/bus/84/",285
+"213",3,"84","Peterson","East","http://www.transitchicago.com/bus/84/",285
+"214",3,"85","Central","North","http://www.transitchicago.com/bus/85/",472
+"215",3,"85","Central","South","http://www.transitchicago.com/bus/85/",472
+"216",3,"85A","North Central","South","http://www.transitchicago.com/bus/85A/",134
+"217",3,"85A","North Central","North","http://www.transitchicago.com/bus/85A/",134
+"218",3,"86","Narragansett/Ridgeland","South","http://www.transitchicago.com/bus/86/",99
+"219",3,"86","Narragansett/Ridgeland","North","http://www.transitchicago.com/bus/86/",99
+"220",3,"87","87th","West","http://www.transitchicago.com/bus/87/",696
+"221",3,"87","87th","East","http://www.transitchicago.com/bus/87/",688
+"222",3,"88","Higgins","East","http://www.transitchicago.com/bus/88/",221
+"223",3,"88","Higgins","West","http://www.transitchicago.com/bus/88/",222
+"224",3,"8A","South Halsted","North","http://www.transitchicago.com/bus/8A/",358
+"225",3,"8A","South Halsted","South","http://www.transitchicago.com/bus/8A/",358
+"226",3,"9","Ashland","North","http://www.transitchicago.com/bus/9/",980
+"227",3,"9","Ashland","South","http://www.transitchicago.com/bus/9/",954
+"228",3,"90","Harlem","South","http://www.transitchicago.com/bus/90/",326
+"229",3,"90","Harlem","North","http://www.transitchicago.com/bus/90/",326
+"230",3,"91","Austin","North","http://www.transitchicago.com/bus/91/",347
+"231",3,"91","Austin","South","http://www.transitchicago.com/bus/91/",346
+"232",3,"92","Foster","West","http://www.transitchicago.com/bus/92/",373
+"233",3,"92","Foster","East","http://www.transitchicago.com/bus/92/",375
+"234",3,"93","California/Dodge","North","http://www.transitchicago.com/bus/93/",194
+"235",3,"93","California/Dodge","South","http://www.transitchicago.com/bus/93/",191
+"236",3,"94","South California","North","http://www.transitchicago.com/bus/94/",388
+"237",3,"94","South California","South","http://www.transitchicago.com/bus/94/",388
+"238",3,"95","95th","East","http://www.transitchicago.com/bus/95/",500
+"239",3,"95","95th","West","http://www.transitchicago.com/bus/95/",500
+"240",3,"96","Lunt","West","http://www.transitchicago.com/bus/96/",66
+"241",3,"96","Lunt","East","http://www.transitchicago.com/bus/96/",66
+"242",3,"97","Skokie","West","http://www.transitchicago.com/bus/97/",264
+"243",3,"97","Skokie","East","http://www.transitchicago.com/bus/97/",264
+"244",1,"Blue","Blue Line","North","http://www.transitchicago.com/blueline/",540
+"245",1,"Blue","Blue Line","South","http://www.transitchicago.com/blueline/",540
+"246",1,"Brn","Brown Line","0","http://www.transitchicago.com/brownline/",432
+"247",1,"G","Green Line","South","http://www.transitchicago.com/greenline/",320
+"248",1,"G","Green Line","North","http://www.transitchicago.com/greenline/",320
+"249",3,"J14","Jeffery Jump","South","http://www.transitchicago.com/bus/J14/",430
+"250",3,"J14","Jeffery Jump","North","http://www.transitchicago.com/bus/J14/",460
+"251",1,"Org","Orange Line","0","http://www.transitchicago.com/orangeline/",361
+"252",1,"P","Purple Line","0","http://www.transitchicago.com/purpleline/",270
+"253",1,"P","Purple Line","South","http://www.transitchicago.com/purpleline/",49
+"254",1,"Pink","Pink Line","0","http://www.transitchicago.com/pinkline/",304
+"255",1,"Red","Red Line","South","http://www.transitchicago.com/redline/",540
+"256",1,"Red","Red Line","North","http://www.transitchicago.com/redline/",540
+"257",3,"X49","Western Express","South","http://www.transitchicago.com/bus/X49/",104
+"258",3,"X49","Western Express","North","http://www.transitchicago.com/bus/X49/",100
+"259",3,"X9","Ashland Express","North","http://www.transitchicago.com/bus/X9/",120
+"260",3,"X9","Ashland Express","South","http://www.transitchicago.com/bus/X9/",128
+"261",3,"X98","Avon Express","South","http://www.transitchicago.com/bus/X98/",2
+"262",1,"Y","Yellow Line","0","http://www.transitchicago.com/yellowline/",228
+"263",3,"BLS-1","Blue Line Shuttle","East","",4
+"264",3,"BLS-1","Blue Line Shuttle","West","",3
+"265",3,"GLS-1","Green Line Shuttle","North","",1
+"266",3,"GLS-1","Green Line Shuttle","South","",1
