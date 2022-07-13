@@ -19,7 +19,7 @@ library(sfheaders)
 
  #setwd("D:\\PASSION_PROJECTS\\cta")
 # setwd("/Users/parag.geminigmail.com/Documents/CTA")
-
+setwd("C:\\Users\\pgupta\\CTA")
 ### main statsistics file #############
 #tripsByRoute,
 #tripsByUniqueStopsRoutes ,
