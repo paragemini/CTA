@@ -40,30 +40,150 @@ shapes <- cta_data[["shapes"]]
 #getting one master file 
 
 master_file <- left_join(
-                left_join(
-               left_join(stop_times, 
-                trips[ , c(1,2,3,6,7)], 
-                  by = "trip_id"), stops[,c(1,3,5,6)], 
-                    by = "stop_id"), calendar[,c(1:8)], by = "service_id")
+  left_join(
+    left_join(stop_times, 
+              trips[ , c(1,2,3,6,7)], 
+              by = "trip_id"), stops[,c(1,3,5,6)], 
+    by = "stop_id"), calendar[,c(1:10)], by = "service_id")
+
+
+#functions 
+
+return_tod <- function(day_one, type_of_day){
+  if(type_of_day != "saturday" & type_of_day != "sunday"){
+    day_tod <- day_one %>%
+      mutate(TOD = if_else(start_local_hour >= 4 &
+                             start_local_hour < 6, "Early AM",
+                           if_else(start_local_hour >= 6 &
+                                     start_local_hour < 9, "AM-Peak",
+                                   if_else(start_local_hour >= 9 &
+                                             start_local_hour < 15, "Midday",
+                                           if_else(start_local_hour >= 15 &
+                                                     start_local_hour < 19, "PM-Peak",
+                                                   if_else(start_local_hour >= 19 &
+                                                             start_local_hour < 23, "Evening", "Late-Night"
+                                                   )
+                                           )
+                                   )
+                           )
+      )
+      )
+  } else if(type_of_day == "saturday"){
+    day_tod <- day_one %>%
+      mutate(TOD = if_else(start_local_hour >= 4 &
+                             start_local_hour < 8, "SAT-AM",
+                           if_else(start_local_hour >= 8 &
+                                     start_local_hour < 20, "SAT-MD",
+                                   if_else(start_local_hour >= 20 , "SAT-PM", "SAT-Late-Night"
+                                   )
+                           )
+      )
+      )
+  } else if(type_of_day == "sunday"){
+    day_tod <- day_one %>%
+      mutate(TOD = if_else(start_local_hour >= 0 &
+                             start_local_hour < 5, "SUN-EA",
+                           if_else(start_local_hour >= 5 &
+                                     start_local_hour < 9, "SUN-AM",
+                                   if_else(start_local_hour >= 9 &
+                                             start_local_hour < 18, "SUN-MD", "SUN-PM"
+                                   )
+                           )
+      )
+      )
+    
+  }
+  
+  return(day_tod)
+  
+}
+
+return_routes_time <- function( master_f){
+  
+  days <- c("monday","tuesday","wednesday","thursday",           
+            "friday","saturday","sunday")    
+  days_split <- lapply(days, function(x){
+    day_one <-   master_f[master_f[[x]] == 1,]
+    day_one <- return_tod(day_one = day_one, type_of_day = x)
+    return(day_one)
+  })
+  
+  names(days_split) <- days
+  
+  i <- 0
+  expt_2 <- lapply(days_split, function(x){
+    i <<- i + 1
+    return(
+      x[ , .(Min_Stop_Sequence = min(stop_sequence),
+             Max_Stop_Sequence = max(stop_sequence),
+             Min_Arrival_Time = min(start_time),
+             Max_Departure_Time = max(end_time),
+             trips = length(unique(trip_id)),
+             trp_ids = trip_id[which.max(stop_sequence)],
+             max_shape_id = shape_id[which.max(stop_sequence)],
+             max_shape_distance = shape_dist_traveled[which.max(stop_sequence)],
+             Day = days[i]
+      ), 
+      by = list(route_id, direction, TOD)][ ,
+                                            `:=`(Min_Arrival_Time = str_pad(Min_Arrival_Time,6,side = "left",pad = "0"),
+                                                 Max_Departure_Time = str_pad(Max_Departure_Time,6,side = "left",pad = "0")),] 
+    )    
+  })
+  
+  return(expt_2)
+}
+
+
 
 
 #calculating time range per route
 
-master_file[ , `:=`(startTime = hms(arrival_time),
-                    endTime = hms(departure_time)) , ][   , 
-                    `:=`(start_time = as.numeric(str_c(hour(startTime), ".",minute(startTime), second(startTime))),
-                         end_time = as.numeric(str_c(hour(endTime ), ".",minute(endTime), second(endTime)))),
-                    ]
+master_f <- master_file[ end_date != 20220611  , , ][ , `:=`(
+  start_time = as.numeric(gsub(arrival_time,pattern = ":",replacement = "")),
+  end_time =  as.numeric(gsub(departure_time,pattern = ":",replacement = "")),
+  start_local_hour = as.numeric(str_sub( arrival_time,1,2))
+)]
 
 
-return_routes_time <- function(master_file){
-  
-  
-}
 
-tuesday <-   master_file[tuesday == 1,  `:=`(min_hour = min(start_Hour),
-                                max_hour = max(end_Hour),), 
-            by = list(route_id )]
+
+
+
+
+routes_time <-  return_routes_time(master_f = master_f)
+routes_daily_stats <- setDT(do.call(rbind.data.frame, routes_time))
+routes_daily_stats[ , Day_Type := if_else(Day != "saturday" & 
+                                            Day != "sunday" , "Wkdy","Wknd"), ]
+frequency <- routes_daily_stats[, .(total_trips = sum(trips),
+                                    Min_Arrival_Time = Min_Arrival_Time,
+                                    Max_Departure_Time = Max_Departure_Time) ,
+                                by = list( TOD, Day,Day_Type, route_id ) ]
+
+
+
+shapes_routes <- setDT(list(unique(routes_daily_stats$max_shape_id)))
+routes_daily_stats_shapes <-st_as_sf(left_join(shapes_routes, trip_shapes, 
+                                               by = c("V1"= "shape_id")),
+                                     crs = 4326, sf_column_name = "geometry")
+
+stops_trips <- setDT(list(unique(stop_times$stop_id[(stop_times$trip_id %in% routes_daily_stats$trp_ids)])))
+
+stops_trips <- left_join(stops_trips,
+                         stops[ , c(1,3,5,6)],  
+                         by =c("V1" = "stop_id"))
+b_17031 <- blocks(state = "17", county = "031", year = 2021)
+
+leaflet() %>% addProviderTiles(providers[[113]]) %>%
+  addPolylines(data = routes_daily_stats_shapes, weight = 2, opacity = 0.5,
+               color = "yellow") %>%
+  addCircleMarkers(data = stops_trips, 
+                   lat = stops_trips$stop_lat, lng = stops_trips$stop_lon,
+                   radius = 4, weight = 1, color = "white") %>%
+  addPolygons(data = st_transform(b_17031, 4326), weight = 1,
+              fillOpacity = 0)
+
+
+
 
 
 
