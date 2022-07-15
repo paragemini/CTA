@@ -16,15 +16,20 @@ library(tigris)
 library(deckgl)
 #library(rdeck)
 library(sfheaders)
+library(tigris)
 
 
+setwd("D:\\PASSION_PROJECTS\\cta\\CTA")
+# files_paths <- list.files("C:\\Users\\pgupta\\CTA\\google_transit", full.names = T)
+# files_names <- list.files("C:\\Users\\pgupta\\CTA\\google_transit")
 
-
-files_paths <- list.files("C:\\Users\\pgupta\\CTA\\google_transit", full.names = T)
-files_names <- list.files("C:\\Users\\pgupta\\CTA\\google_transit")
+files_paths <- list.files("D:\\PASSION_PROJECTS\\cta\\CTA\\google_transit", full.names = T)
+files_names <- list.files("D:\\PASSION_PROJECTS\\cta\\CTA\\google_transit")
 files <- lapply(files_paths, fread)
 names(files) <- gsub(pattern = "\\.txt$", replacement = "", x = files_names)
 cta_data <- files
+tod_hours <- read.csv("tod-hours.csv")
+tod_hours$PERIOD <- gsub(tod_hours$PERIOD, pattern = "_", replacement = "-")
 
 
 
@@ -36,13 +41,21 @@ stops <- cta_data[["stops"]]
 stop_times <- cta_data[["stop_times"]]
 shapes <- cta_data[["shapes"]]
 
+trips <- left_join(trips,stop_times[ , .(Distance = shape_dist_traveled[which.max(stop_sequence)] ), 
+                              by = list(trip_id)], by = "trip_id")
+
+
+
+
+
+
 
 #getting one master file 
 
 master_file <- left_join(
   left_join(
     left_join(stop_times, 
-              trips[ , c(1,2,3,6,7)], 
+              trips[ , c(1,2,3,6,7,10)], 
               by = "trip_id"), stops[,c(1,3,5,6)], 
     by = "stop_id"), calendar[,c(1:10)], by = "service_id")
 
@@ -53,7 +66,7 @@ return_tod <- function(day_one, type_of_day){
   if(type_of_day != "saturday" & type_of_day != "sunday"){
     day_tod <- day_one %>%
       mutate(TOD = if_else(start_local_hour >= 4 &
-                             start_local_hour < 6, "Early AM",
+                             start_local_hour < 6, "Early-AM",
                            if_else(start_local_hour >= 6 &
                                      start_local_hour < 9, "AM-Peak",
                                    if_else(start_local_hour >= 9 &
@@ -100,6 +113,7 @@ return_tod <- function(day_one, type_of_day){
 
 return_routes_time <- function( master_f){
   
+  message("Getting all the trips and stop sequences by day")
   days <- c("monday","tuesday","wednesday","thursday",           
             "friday","saturday","sunday")    
   days_split <- lapply(days, function(x){
@@ -108,8 +122,24 @@ return_routes_time <- function( master_f){
     return(day_one)
   })
   
+  message("Got all the trips")
   names(days_split) <- days
   
+  message("Conveting now int to double")
+  days_split <- lapply(days_split, function(y){
+    setDT(lapply(y, 
+                 function(x){  
+                   if(is.integer(x)){
+                     return(as.double(x))
+                   } else {
+                     return(x)
+                   }
+                 }))
+  })
+
+  message("Converted everything int to double")
+  
+  message("Calculate stats")
   i <- 0
   expt_2 <- lapply(days_split, function(x){
     i <<- i + 1
@@ -118,19 +148,23 @@ return_routes_time <- function( master_f){
              Max_Stop_Sequence = max(stop_sequence),
              Min_Arrival_Time = min(start_time),
              Max_Departure_Time = max(end_time),
-             trips = length(unique(trip_id)),
+             trips =  length(trip_id[stop_sequence == 1]),
+             dist_travelled = sum(Distance[stop_sequence == 1]),
+             max_dist_travelled = max(Distance[stop_sequence == 1]),
+             min_dist_travelled = min(Distance[stop_sequence == 1]),
+             median_dist_travelled = median(Distance[stop_sequence == 1]),
              trp_ids = trip_id[which.max(stop_sequence)],
              max_shape_id = shape_id[which.max(stop_sequence)],
-             max_shape_distance = shape_dist_traveled[which.max(stop_sequence)],
              Day = days[i]
       ), 
-      by = list(route_id, direction, TOD)][ ,
-                                            `:=`(Min_Arrival_Time = str_pad(Min_Arrival_Time,6,side = "left",pad = "0"),
-                                                 Max_Departure_Time = str_pad(Max_Departure_Time,6,side = "left",pad = "0")),] 
+      by = list(route_id, TOD, direction)][ ,
+              `:=`(Min_Arrival_Time = str_pad(Min_Arrival_Time,6,side = "left",pad = "0"),
+                   Max_Departure_Time = str_pad(Max_Departure_Time,6,side = "left",pad = "0")),] 
     )    
   })
-  
-  return(expt_2)
+  message("Finished Stats and now Rbinding")
+  routes_time <- do.call(rbind.data.frame, expt_2)
+  return(routes_time)
 }
 
 
@@ -151,9 +185,11 @@ master_f <- master_file[ end_date != 20220611  , , ][ , `:=`(
 
 
 routes_time <-  return_routes_time(master_f = master_f)
-routes_daily_stats <- setDT(do.call(rbind.data.frame, routes_time))
+
+routes_daily_stats <- left_join(routes_daily_stats, tod_hours, by = c( "TOD" =  "PERIOD"))
 routes_daily_stats[ , Day_Type := if_else(Day != "saturday" & 
-                                            Day != "sunday" , "Wkdy","Wknd"), ]
+                          Day != "sunday" , "Wkdy","Wknd"), ]
+routes_daily_stats <-  routes_daily_stats[ , c(1:3,13,14,16,8,9, 6,7,10,11,12,5,4,15)]
 frequency <- routes_daily_stats[, .(total_trips = sum(trips),
                                     Min_Arrival_Time = Min_Arrival_Time,
                                     Max_Departure_Time = Max_Departure_Time) ,
@@ -171,7 +207,10 @@ stops_trips <- setDT(list(unique(stop_times$stop_id[(stop_times$trip_id %in% rou
 stops_trips <- left_join(stops_trips,
                          stops[ , c(1,3,5,6)],  
                          by =c("V1" = "stop_id"))
-b_17031 <- blocks(state = "17", county = "031", year = 2021)
+
+
+stops
+b_17031 <- blocks(state = "17", county = "031", year = 2020)
 
 leaflet() %>% addProviderTiles(providers[[113]]) %>%
   addPolylines(data = routes_daily_stats_shapes, weight = 2, opacity = 0.5,
