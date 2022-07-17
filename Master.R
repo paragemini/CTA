@@ -17,6 +17,7 @@ library(deckgl)
 #library(rdeck)
 library(sfheaders)
 library(tigris)
+library(mapdeck)
 
 
 setwd("D:\\PASSION_PROJECTS\\cta\\CTA")
@@ -175,7 +176,7 @@ trips_stats <- stop_times[ , .(Distance = shape_dist_traveled[which.max(stop_seq
                   `:=`(arrival =hms(insert_comma(Min_Arrival_Time)),
                        departure = hms(insert_comma(Max_Departure_Time))),
                 ][ ,`:=`(duration= seconds(departure - arrival),
-                         start_local_hour = hour(arrival)), ]
+                         start_local_hour = hour(arrival)), ][ , duration:= as.numeric(duration), ]
 
 
 trips_stats_meta<- setDT(left_join(
@@ -184,17 +185,125 @@ trips_stats_meta<- setDT(left_join(
             by = "trip_id"), calendar[,c(1:10)], 
              by = "service_id"))
 
-trips_stats_meta_f <- trips_stats_meta[end_date != 20220611,]
+trips_stats_meta_f <- as.data.frame(trips_stats_meta[end_date != 20220611,])
 
 trips_day <- return_routes_time(trips_stats_meta_f)
 trips_day_df <- do.call(rbind.data.frame, trips_day)
+
+tuesday <- setDT(list(  trips_day_df$trip_id[trips_day_df$Day == "tuesday"]))
+
+
+
+tuesday <- left_join(  tuesday,
+                       trips_stats_meta_f[,-c(10,11,14:22)], 
+                       by = c("V1" = "trip_id"))
+tuesday[ , `:=`(start_local_mins = as.numeric(str_sub(Min_Arrival_Time,3,4)),
+                start_local_secs = as.numeric(str_sub(Min_Arrival_Time,5,6))), ][ , 
+                  `:=`(start_secs = start_local_hour * 60 * 60 +
+                                    start_local_mins * 60 + 
+                                    start_local_secs ), ][ , end_secs:= start_secs + duration, ]
+
+
+tuesday_sf <- left_join(tuesday, 
+                        trip_shapes, 
+                        by = "shape_id")
+tueday_trips <-  lapply(1:nrow(tuesday_sf), sum)
+
+for( i in 1:length(1:nrow(tuesday_sf))){ #:
+  print(i)
+   paths <- data.frame(Z = rep(0, nrow(tuesday_sf$geometry[[i]][ , c(1,2)])),
+             start_secs = tuesday_sf$start_secs[i],
+             ends_secs = tuesday_sf$end_secs[i],
+             duration = tuesday_sf$duration[i])
+  
+  x <-  cbind(tuesday_sf$geometry[[i]][ , c(1,2)],paths)
+  x$interval <-  x$duration/nrow(x)
+  x$sequence <- 1:nrow(x)
+  colnames(x)[1:2] <- c("X","Y")
+  x$M <- x$start_secs + x$interval * x$sequence
+  x_f <- setDT(x[ , c(1,2,3,9)])
+  tueday_trips[[i]] <- st_linestring(as.matrix(x_f))
+}
+
+names(tueday_trips) <- tuesday_sf$V1
+  
+all_tues_trip <- data.frame(ID = tuesday_sf$V1)        
+all_tues_trip$geometry <- tueday_trips
+all_tues_trip <- st_as_sf(all_tues_trip, sf_column_name = "geometry",
+                       crs = 4326)
+#[route_color == "565a5c" , route_color:= "ffffff" ,]
+routes[ , route_color:= str_c("#", route_color), ]
+all_tues_trip <- left_join(left_join(all_tues_trip, 
+                           tuesday[,c(1,2)],
+                           by = c("ID" = "V1")), 
+                           routes[,c(1,6)],
+                           by = "route_id")
+
+all_tues_trip_one <- split(all_tues_trip,
+                           all_tues_trip$route_color)
+
+trips_map <- mapdeck(
+  location = c( -87.62963419064182,41.88243038220215) , 
+  zoom = 10, 
+  style = mapdeck_style("light")
+)
+
+
+# trips_map <- trips_map %>%
+#   add_trips(
+#     layer_id = str_c("5"),
+#     data = all_tues_trip_one[[5]][1:12800,],
+#     stroke_colour = "#ffffff",
+#     start_time = 0,
+#     end_time = 90300,
+#     trail_length = 400,
+#     animation_speed = 700,
+#     stroke_width = 10
+#   )
+trips_map <- trips_map %>% add_trips(
+  layer_id = str_c("5"),
+  data = all_tues_trip_one[[5]][1:12500,],
+  stroke_colour = "#6E85B7",
+  start_time = 0,
+  end_time = 90300,
+  trail_length = 400,
+  animation_speed = 400,
+  stroke_width = 100,
+  opacity = 0.2
+)
+
+
+
+
+
+for( i in c(1:11)){
+  if(i != 5) {
+    trips_map <- trips_map %>%
+      add_trips(
+        layer_id = str_c(i),
+        data = all_tues_trip_one[[i]],
+        stroke_colour = names(all_tues_trip_one)[i],
+        start_time = 0,
+        end_time = 90300,
+        trail_length = 500,
+        animation_speed = 400,
+        stroke_width = 100
+      )
+  }
+}
+trips_map
+
+ 
+
+
+
 
 
 weekly_stats <- trips_day_df[ ,.(total_trips = .N,
                 total_distance = sum(Distance),
                 total_stops = sum(Total_Stops),
                 total_time = sum(duration)), by = list(Day,TOD)]
-weekly_stats_f <-  setDT(lapply(weekly_stats[ , 2:ncol(weekly_stats)], function(x){
+weekly_stats_f <-  setDT(lapply(weekly_stats[ , 3:ncol(weekly_stats)], function(x){
   return(sum(x))
 }))
 weekly_stats_f$distance_miles <- weekly_stats_f$total_distance * 0.000189394

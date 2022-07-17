@@ -16,11 +16,17 @@ library(tigris)
 #library(deckgl)
 library(rdeck)
 library(sfheaders)
-
+library(rjson)
+library(httr)
+library(RCurl)
 
 #unique shapes 1658
 
-#setwd("D:\\PASSION_PROJECTS\\cta")
+
+
+
+
+setwd("D:\\PASSION_PROJECTS\\cta\\CTA")
 #setwd("/Users/parag.geminigmail.com/Documents/CTA")
 
 ### main statsistics file #############
@@ -81,12 +87,12 @@ scrape_stops <- function(){
 
 ###### reading files #########
 #transfers <- read.csv("transfers.csv")
-files_paths <- list.files("C:\\Users\\pgupta\\CTA\\google_transit", full.names = T)
-files_names <- list.files("C:\\Users\\pgupta\\CTA\\google_transit")
+# files_paths <- list.files("C:\\Users\\pgupta\\CTA\\google_transit", full.names = T)
+# files_names <- list.files("C:\\Users\\pgupta\\CTA\\google_transit")
 
 
-# files_paths <- list.files("./google_transit", full.names = T)
-# files_names <- list.files("./google_transit")
+files_paths <- list.files("./google_transit", full.names = T)
+files_names <- list.files("./google_transit")
 files <- lapply(files_paths, fread)
 names(files) <- gsub(pattern = "\\.txt$", replacement = "", x = files_names)
 cta_data <- files
@@ -130,6 +136,8 @@ trip_shapes <- left_join(trip_shapes, shapes[ , .(total_distance_ft = shape_dist
                                               by = list(shape_id)], by = "shape_id")
 trip_shapes$length_mi <- st_length(trip_shapes)/1609.34
 
+rm(list = setdiff(ls(), "trip_shapes"))
+gc()
 
 ###########################################################################
 
@@ -138,17 +146,48 @@ trip_shapes$length_mi <- st_length(trip_shapes)/1609.34
 #stop times with stops lat,long
 stop_times_updated <- left_join(stop_times,  stops[,c(1,3,5,6)],  by = "stop_id")
 
-trip_stops <-  left_join(left_join(stop_times, trips, by = "trip_id"),
-                         calendar[ , c(1,9:11)], by = "service_id")
+trip_stops <-  left_join(left_join(stop_times, trips[,c(1,2,3,6,7)], by = "trip_id"),
+                         calendar[ , c(1:10)], by = "service_id")
 
-totalTripsByTotStops <- left_join(
-                        trip_stops[, .(total_stops = .N), #total stops by tripID
+totalTripsByTotStops <- trip_stops[, .(total_stops = .N), #total stops by tripID
                         by = list(route_id, shape_id,
                                   trip_id,direction,service_id)][ ,
                         .(totalTrips = .N, trip_id = trip_id[.N]) ,
                         by = list( route_id,total_stops,direction,
-                                   service_id,shape_id)],
-                        calendar[,c(1,9,10,11 )], by = "service_id")
+                                   service_id,shape_id)]
+
+shape_blue <-setDT(list(unique( totalTripsByTotStops$shape_id[ totalTripsByTotStops$route_id == "Blue"])))
+expt <- left_join(shape_blue, totalTripsByTotStops, by = c("V1" = "shape_id"))
+expt <- expt[!duplicated(expt$V1),]
+
+expt_sf <-expt[!duplicated(expt$total_stops),]
+expt_sf <-     st_as_sf(left_join(expt_sf, trip_shapes, by =c("V1" = "shape_id")),
+                    sf_column_name = "geometry", crs = 4326)
+
+expt_sf$seg_length_m <- (expt_sf$total_distance_ft / expt_sf$total_stops)* 0.3048
+
+plot(segments)
+
+
+segments <- st_segmentize(expt_sf[1,], dfMaxLength = expt_sf$seg_length_m[1] )
+nrow(st_coordinates(segments)  )
+nrow(st_coordinates(expt_sf[1,]) )
+
+
+                     
+map1 <- leaflet() %>% addTiles()
+
+ for(i in 1:nrow(expt_sf)){
+   map1 <- map1 %>% addPolylines(data = expt_sf[ i,], 
+                                 popup = paste0("Stops : ",expt_sf$total_stops[i]),
+                                 group = paste0(expt_sf$total_stops[i]))
+ }
+
+map1 %>% addLayersControl(overlayGroups = expt_sf$total_stops) %>%
+  addCircleMarkers(data = stops, lat = stops$stop_lat, weight = 1,radius = 4,
+                   lng = stops$stop_lon, popup = paste0(stops$stop_name), color = "red")
+
+
 
 split_stop_times <- split(stop_times_updated, stop_times_updated$trip_id)
 stop_times_geom <- lapply(1:length(split_stop_times), sum)
