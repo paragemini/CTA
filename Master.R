@@ -322,6 +322,12 @@ trips_day_df[ , .(total_trips = n(),
 
 #total trips by day
 # total trips by time of day by transit type like buses and subway
+# 5 longest trips with stops by time
+# 5 shortest trips with stops by time
+
+# 5 longest trips with stops by distance
+# 5 shortest trips with stops by time
+
 
 
 
