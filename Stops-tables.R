@@ -5,7 +5,7 @@ library(dplyr)
 library(stringr)
 library(tidyr)
 library(leaflet)
-
+library(echarts4r)
 #total trips, routes, frequency, first-trip, last-trip, tod
 #stops : trips by TOD and routes, routs x-axis, trips by tod Y axis 
 
@@ -61,11 +61,18 @@ return_tod <- function(day_one, type_of_day){
 
 
 
-setwd("~/Documents/CTA/CTA")
- 
-files_paths <- list.files("~/Documents/CTA/CTA/google_transit", full.names = T)
-files_names <- list.files("~/Documents/CTA/CTA/google_transit")
+# setwd("~/Documents/CTA/CTA")
+#  
+# files_paths <- list.files("~/Documents/CTA/CTA/google_transit", full.names = T)
+# files_names <- list.files("~/Documents/CTA/CTA/google_transit")
 
+
+setwd("D:\\PASSION_PROJECTS\\cta\\CTA")
+# files_paths <- list.files("C:\\Users\\pgupta\\CTA\\google_transit", full.names = T)
+# files_names <- list.files("C:\\Users\\pgupta\\CTA\\google_transit")
+
+files_paths <- list.files("D:\\PASSION_PROJECTS\\cta\\CTA\\google_transit", full.names = T)
+files_names <- list.files("D:\\PASSION_PROJECTS\\cta\\CTA\\google_transit")
 files <- lapply(files_paths, fread)
 names(files) <- gsub(files_names, pattern = "\\.txt$", replacement = "")
 
@@ -110,9 +117,10 @@ stop_trips_tod <- stops_tuesday[ ,  .(total_trips = length(unique(trip_id)))   ,
                                  by = list(TOD,stop_id)] %>%
                                     pivot_wider(names_from = TOD, 
                                             values_from = total_trips)
-stop_trips_strat <- stops_tuesday %>% 
+stop_trips_strat <- setDT(stops_tuesday %>% 
   group_by(stop_id, TOD, route_id) %>%
-  summarise(total_trips_count = n()) 
+  summarise(total_trips_count = n()) %>%
+  ungroup())
 
 
 #final table
@@ -126,6 +134,8 @@ final_stops <- left_join(left_join(
              stops[, c(1,3,5,6)], 
                by = "stop_id") %>%
    arrange(desc(total_trips))
+final_stops$Rank <- 1:nrow(final_stops)
+
 
 final_stops_25 <- final_stops[1:25,]
 
@@ -133,16 +143,45 @@ leaflet() %>%
   addProviderTiles(providers[[113]]) %>%
   addCircleMarkers(data = final_stops_25, lat = final_stops_25$stop_lat,
                    lng = final_stops_25$stop_lon, 
-                   popup = paste0("<b>Name : </b>", final_stops_25$stop_name,
+                   popup  = paste0("<b>Stop Rank : </b>", final_stops_25$Rank,
+                                  "<br><b>Name : </b>", final_stops_25$stop_name,
                                   "<br><b>Total Trips : </b>", final_stops_25$total_trips,
                                   "<br><b> Routes : </b>", final_stops_25$route_ids,
                                   "<br><b> Total Routes : </b>", final_stops_25$total_routes),
-                                      radius = (final_stops_25$total_trips/100) * 2, 
-                                      weight = 1, fillColor = "yellow", color = "yellow")
+                                  radius = (final_stops_25$total_trips/100) * 2, 
+                                  weight = 1, fillColor = "yellow", color = "yellow")
 
 
+return_e_chart <- function(id = "1106"){
+  id <- as.numeric(id)
+  stop_times_tod <-  stop_trips_strat[ stop_id == id, , ]  %>%
+   pivot_wider(names_from = TOD, values_from = total_trips_count)
+  stop_times_tod$Total <- rowSums(stop_times_tod[,3:8], na.rm = T)
+  print(stop_times_tod)
+  bar_chart <- stop_times_tod %>%
+    arrange(desc(Total)) %>%
+    e_charts(route_id) %>%
+    e_bar(`AM-Peak`, stack = "1", emphasis = list(focus = 'series')) %>%
+    e_bar(`PM-Peak`, stack = "1", emphasis = list(focus = 'series')) %>%
+    e_bar(`Midday`, stack = "1", emphasis = list(focus = 'series')) %>%
+    e_bar(`Early-AM`, stack = "1", emphasis = list(focus = 'series')) %>%
+    e_bar(`Evening`, stack = "1", emphasis = list(focus = 'series')) %>%
+    e_bar(`Late-Night`, stack = "1", emphasis = list(focus = 'series')) %>% 
+    e_tooltip(trigger = 'axis', axisPointer = list(type = 'shadow')) %>%
+    e_line(Total) %>%
+    e_theme("vintage")
+  return(bar_chart)
+} 
+ 
+   
+return_e_chart("18396")
 
+df <- data.frame(
+  parents = c("","earth", "earth", "mars", "mars", "land", "land", "ocean", "ocean", "fish", "fish", "Everything", "Everything", "Everything"),
+  labels = c("Everything", "land", "ocean", "valley", "crater", "forest", "river", "kelp", "fish", "shark", "tuna", "venus","earth", "mars"),
+  value = c(0, 30, 40, 10, 10, 20, 10, 20, 20, 8, 12, 10, 70, 20)
+)
 
-
-
+# create a tree object
+universe <- data.tree::FromDataFrameNetwork(df)
 
