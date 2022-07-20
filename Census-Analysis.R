@@ -7,6 +7,7 @@ library(lehdr)
 
 
 
+
 tables_acs <- setDT(load_variables(year = 2020,  dataset = "acs5"))
 tables_acs <- tables_acs %>% 
                 separate(col = name, 
@@ -22,6 +23,8 @@ unique_table <- tables_acs[ !duplicated(table_id) , c(1,4,5), ]
 
 
 
+
+# ee3fde5e3ae4dc71d76eb5a59a8bfa7362fa3ca8
 #Functions to calculate census-data
 
 #API calls

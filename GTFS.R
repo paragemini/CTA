@@ -97,6 +97,13 @@ shapes <- cta_data[["shapes"]]
 
 # getting trips by routes and route type
 
+trips_cal <-  left_join(trips,calendar, by = "service_id")
+trips_cal <- trips_cal[ trips_cal$end_date != "20220611",]
+
+nrow(trips_cal[ trips_cal$monday == 1, ])
+
+
+
 tripRoute <- left_join(trips, routes, by = "route_id")
 tripsByRoute <-  tripRoute[ , .(trips = .N), 
                 by = list(route_type, route_id, 
