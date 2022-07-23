@@ -6,6 +6,7 @@ library(stringr)
 library(tidyr)
 library(leaflet)
 library(echarts4r)
+library(leafgl)
 #total trips, routes, frequency, first-trip, last-trip, tod
 #stops : trips by TOD and routes, routs x-axis, trips by tod Y axis 
 
@@ -99,6 +100,23 @@ stops_tuesday <- stop_times[trip_id %in% trips_tuesday$trip_id , , ][,
 
 stops_tuesday <- return_tod(setDT(left_join(stops_tuesday, 
                     trips_cal[ , c(1,3)], by = "trip_id")), type_of_day = "tuesday")
+
+stops_tuesday <- left_join(stops_tuesday, 
+                           stops[,c(1,3,5,6)], 
+                           by = "stop_id")
+stops_tues_sf <- st_as_sf(stops_tuesday, 
+                          coords = c("stop_lon", "stop_lat"),
+                          crs = 4326)
+
+leaflet() %>%
+  addProviderTiles(providers[[113]]) %>%
+   addGlPoints(data = stops_tues_sf , weight = 1, radius = 4,
+                    color = "orange", fillColor = "orange", 
+                    popup = paste0( "<b> Stop Name : ", 
+                    stops_tues_sf$stop_name,"</b>"))
+
+
+
 
 stops_a <- stops_tuesday %>% group_by(stop_id) %>%
               arrange(arrival_time) %>% 
