@@ -8,21 +8,9 @@ library(leaflet)
 library(echarts4r)
 library(leafgl)
 library(tidycensus)
+library(echarts4r)
 
-load("D:/PASSION_PROJECTS/cta/CTA/base_Data-shapes-tuesday-trips.Rdata")
-
-setwd("D:\\PASSION_PROJECTS\\cta\\CTA")
-# setwd("~/Documents/CTA/CTA")
-#  
-# files_paths <- list.files("~/Documents/CTA/CTA/google_transit", full.names = T)
-# files_names <- list.files("~/Documents/CTA/CTA/google_transit")
-
-
-
-# files_paths <- list.files("C:\\Users\\pgupta\\CTA\\google_transit", full.names = T)
-# files_names <- list.files("C:\\Users\\pgupta\\CTA\\google_transit")
-
-
+#functions
 return_tod <- function(day_one, type_of_day){
   if(type_of_day != "saturday" & type_of_day != "sunday"){
     day_tod <- day_one %>%
@@ -72,8 +60,30 @@ return_tod <- function(day_one, type_of_day){
   
 }
 
-files_paths <- list.files("D:\\PASSION_PROJECTS\\cta\\CTA\\google_transit", full.names = T)
-files_names <- list.files("D:\\PASSION_PROJECTS\\cta\\CTA\\google_transit")
+
+
+
+
+# load("D:/PASSION_PROJECTS/cta/CTA/base_Data-shapes-tuesday-trips.Rdata")
+load("C:\\Users\\pgupta\\CTA/base_Data-shapes-tuesday-trips.Rdata")
+
+
+#setwd("D:\\PASSION_PROJECTS\\cta\\CTA")
+# setwd("~/Documents/CTA/CTA")
+#  
+# files_paths <- list.files("~/Documents/CTA/CTA/google_transit", full.names = T)
+# files_names <- list.files("~/Documents/CTA/CTA/google_transit")
+
+
+
+ files_paths <- list.files("C:\\Users\\pgupta\\CTA\\google_transit", full.names = T)
+ files_names <- list.files("C:\\Users\\pgupta\\CTA\\google_transit")
+
+
+
+
+#files_paths <- list.files("D:\\PASSION_PROJECTS\\cta\\CTA\\google_transit", full.names = T)
+#files_names <- list.files("D:\\PASSION_PROJECTS\\cta\\CTA\\google_transit")
 files <- lapply(files_paths, fread)
 names(files) <- gsub(files_names, pattern = "\\.txt$", replacement = "")
 
@@ -129,8 +139,67 @@ leaflet() %>% addTiles() %>%
 
 #### creating chart for all trips by Route 
 
+blue_trips_stops <- stops_tues_f[trip_id %in% tuesday$trip_id[tuesday$route_id == "Blue"], ]
+blue_trips_stops <- left_join(blue_trips_stops, stops[,c("stop_id","stop_name")], by = "stop_id")
+max_trip_id <- blue_trips_stops[ which(blue_trips_stops$stop_sequence == max(blue_trips_stops$stop_sequence))[c(1,2)]]$trip_id
+
+
+bstops_time <- blue_trips_stops %>%
+  #filter(trip_id %in% max_trip_id) %>%
+  arrange(trip_id,arrival_time) %>%
+  select(stop_name,arrival_time,trip_id) %>%
+  arrange(arrival_time,trip_id)%>%
+  pivot_wider(names_from = "trip_id", values_from = "arrival_time")
 
 
 
+time_conv <- setDT(lapply(bstops_time[,2:ncol(bstops_time)], function(x){
+  h <- strsplit(x, ":")
+  t <- unlist(lapply(h, function(k){
 
+       t_hour <- as.numeric(k[1]) * 3600
+       t_min  <- as.numeric(k[2]) * 60
+       t_s    <- as.numeric(k[3])
+       return(t_hour + t_min + t_s)
+  }))
 
+  return(t)
+
+}))
+
+time_conv <- cbind(bstops_time[,1], time_conv) %>%
+  arrange(`68227751051`)
+
+colnames(time_conv)[c(2:ncol(time_conv))] <- unlist(lapply(2:ncol(time_conv), function(x){
+                                                            str_c("trip_", x)})) 
+
+ time_conv %>%
+  e_charts(stop_name) %>%
+  e_line(trip_2, legend = F) %>%
+   e_line(trip_3) %>%
+   e_line(trip_4) %>%
+   e_line(trip_5) %>%
+   e_line(trip_6) %>%
+   e_line(trip_7) %>%
+   e_line(trip_8) %>%
+   e_line(trip_9) %>%
+   e_tooltip(trigger = "axis") %>%
+   e_y_axis(inverse = T) %>%
+   #e_x_axis(alignTicks = T) %>%
+   e_x_axis(alignTicks = T, axisLabel = list(interval = 3)) %>%
+   e_title("Line and area charts")
+
+  convert_secs <- function(col_vector){
+    h <- strsplit(col_vector, ":")
+      t <- unlist(lapply(h, function(k){
+
+           t_hour <- as.numeric(k[1]) * 3600
+           t_min  <- as.numeric(k[2]) * 60
+           t_s    <- as.numeric(k[3])
+           return(t_hour + t_min + t_s)
+      }))
+
+      return(t)
+  }
+  
+  
