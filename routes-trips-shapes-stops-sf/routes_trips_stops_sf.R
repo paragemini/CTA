@@ -59,31 +59,38 @@ return_tod <- function(day_one, type_of_day){
   return(day_tod)
   
 }
+convert_secs <- function(col_vector){
+  h <- strsplit(col_vector, ":")
+  t <- unlist(lapply(h, function(k){
+    
+    t_hour <- as.numeric(k[1]) * 3600
+    t_min  <- as.numeric(k[2]) * 60
+    t_s    <- as.numeric(k[3])
+    return(t_hour + t_min + t_s)
+  }))
+  
+  return(t)
+}
 
 
 
 
+load("D:/PASSION_PROJECTS/cta/CTA/base_Data-shapes-tuesday-trips.Rdata")
+#load("C:\\Users\\pgupta\\CTA/base_Data-shapes-tuesday-trips.Rdata")
 
-# load("D:/PASSION_PROJECTS/cta/CTA/base_Data-shapes-tuesday-trips.Rdata")
-load("C:\\Users\\pgupta\\CTA/base_Data-shapes-tuesday-trips.Rdata")
 
-
-#setwd("D:\\PASSION_PROJECTS\\cta\\CTA")
+setwd("D:\\PASSION_PROJECTS\\cta\\CTA")
 # setwd("~/Documents/CTA/CTA")
 #  
-# files_paths <- list.files("~/Documents/CTA/CTA/google_transit", full.names = T)
-# files_names <- list.files("~/Documents/CTA/CTA/google_transit")
+ # files_paths <- list.files("~/Documents/CTA/CTA/google_transit", full.names = T)
+ # files_names <- list.files("~/Documents/CTA/CTA/google_transit")
+
+ #files_paths <- list.files("C:\\Users\\pgupta\\CTA\\google_transit", full.names = T)
+# files_names <- list.files("C:\\Users\\pgupta\\CTA\\google_transit")
 
 
-
- files_paths <- list.files("C:\\Users\\pgupta\\CTA\\google_transit", full.names = T)
- files_names <- list.files("C:\\Users\\pgupta\\CTA\\google_transit")
-
-
-
-
-#files_paths <- list.files("D:\\PASSION_PROJECTS\\cta\\CTA\\google_transit", full.names = T)
-#files_names <- list.files("D:\\PASSION_PROJECTS\\cta\\CTA\\google_transit")
+files_paths <- list.files("D:\\PASSION_PROJECTS\\cta\\CTA\\google_transit", full.names = T)
+files_names <- list.files("D:\\PASSION_PROJECTS\\cta\\CTA\\google_transit")
 files <- lapply(files_paths, fread)
 names(files) <- gsub(files_names, pattern = "\\.txt$", replacement = "")
 
@@ -189,17 +196,6 @@ colnames(time_conv)[c(2:ncol(time_conv))] <- unlist(lapply(2:ncol(time_conv), fu
    e_x_axis(alignTicks = T, axisLabel = list(interval = 3)) %>%
    e_title("Line and area charts")
 
-  convert_secs <- function(col_vector){
-    h <- strsplit(col_vector, ":")
-      t <- unlist(lapply(h, function(k){
-
-           t_hour <- as.numeric(k[1]) * 3600
-           t_min  <- as.numeric(k[2]) * 60
-           t_s    <- as.numeric(k[3])
-           return(t_hour + t_min + t_s)
-      }))
-
-      return(t)
-  }
+ 
   
   
